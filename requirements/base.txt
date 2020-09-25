@@ -1,0 +1,14 @@
+mongoengine
+celery==3.1.24
+crontab
+Django==1.9.9
+redis<3
+numpy
+pandas==0.24.2
+Pillow
+pymongo==3.6.1
+torch
+torchvision
+sklearn
+psutil
+dpkt
