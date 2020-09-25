@@ -1,4 +1,4 @@
-# user-behavior-prediction
+# user behavior prediction
 
 Nowadays, by increasing the number of users and the bandwidth's limitations, Internet Service providers need automatic resource allocations.
 For this purpose, they should be familiar with their users and their usage.
