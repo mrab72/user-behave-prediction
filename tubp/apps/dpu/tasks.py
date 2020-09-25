@@ -14,6 +14,8 @@ from tubp.core.utils.utils import kill_process
 
 logger = logging.getLogger(__name__)
 
+# Todo: add routing key!
+
 
 class CaptureTrafficTask(PeriodicTask):
     run_every = crontab(minute="*/5")
