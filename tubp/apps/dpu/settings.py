@@ -1,6 +1,9 @@
 from django.conf import settings
 import os
 
+
+from tubp.settings import get_env_var
+
 PREDICTION_MODEL_PATH = os.path.join(settings.BASE_DIR, "tubp/apps/dpu/assets/models/the_model.pkl")
 FLOWS_TEMP_DIR = "/mnt/temp_dir"
 FLOWS_IMAGE_DIR = "mnt/temp_img_dir"
@@ -23,3 +26,5 @@ TRAFFIC_CLASSES = ['Database_png',
                    'VoIP_png',
                    'RemoteAccess_png'
                    ]
+
+TEMP_MEMORY_DIR = get_env_var("TEMP_DIR", prefixed=True, default="/media")
