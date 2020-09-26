@@ -21,6 +21,12 @@ class CaptureTrafficTask(PeriodicTask):
     routing_key = settings.TUBP_DATA_CAPTURE_ROUTING_KEY
 
     def run(self, period="5"):
+        """
+
+        :param period: the duration of capturing network line
+        :return: write pcap data in a file in temp_directory and then run PPOEEE decoder
+        """
+
         temp_file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         file = os.path.join(settings.TEMP_MEMORY_DIR, 'temporary_pcap_file_%s.pcap' % temp_file_name)
         start = datetime.utcnow()
@@ -44,12 +50,19 @@ class PPOEDecoderTask(Task):
     routing_key = settings.TUBP_DECODER_ROUTING_KEY
 
     def run(self, input_file=None, process_num="1"):
+        """
+
+        :param input_file: a pcap file
+        :param process_num: a random pattern to have a specific pattern for the pcap file until its data store in mongod
+        :return: write a pcap file without ppoeee header and run remover arp dns task
+        """
         output_file = os.path.join(settings.TEMP_MEMORY_DIR, 'temporary_decode_pcap_%s.pcap' % process_num)
         proc = subprocess.Popen(
             "sudo ./stripe/stripe -r %s  -w %s" % (input_file, output_file),
             shell=True
         )
-        logger.info("start decoding ppoee")
+
+        logger.info("start decoding ppoeee")
         while proc.poll() is None:
             pass
         os.remove(input_file)
@@ -61,6 +74,12 @@ class RemoveARPDNSPacketsTask(Task):
     routing_key = settings.TUBP_REMOVER_ROUTING_KEY
 
     def run(self, input_file=None, process_num="1"):
+        """
+
+        :param input_file: a pcap file without ppoeee headers
+        :param process_num: a random pattern to have a specific pattern for the pcap file until its data store in mongod
+        :return: write the traffic without arp and dns in pcap file and run extract flows task
+        """
         output_file = os.path.join(settings.TEMP_MEMORY_DIR, 'temporary_remove_pcap_%s.pcap' % process_num)
         proc = subprocess.Popen(
             "sudo tcpdump -r %s not port 53 and not arp -w %s" % (input_file, output_file),
@@ -78,6 +97,13 @@ class ExtractFlowsTask(Task):
     routing_key = settings.TUBP_FLOWS_PROCESS_ROUTING_KEY
 
     def run(self, input_file=None, process_num="1"):
+        """
+
+        :param input_file: a pcap file
+        :param process_num:
+        :return: extract flows from pcap file and run task of extracting features of flows
+         the process of extracting features start after extracting 1000 flows(for better pipeline)
+        """
         output_dir = settings.FLOWS_TEMP_DIR + "_%s" % process_num
         os.mkdir(output_dir)
         proc = subprocess.Popen(
@@ -96,6 +122,14 @@ class ExtractFlowsFeaturesTask(Task):
     routing_key = settings.TUBP_FLOWS_PROCESS_ROUTING_KEY
 
     def run(self, file_dir=None, process_num="1", removed_pcap_file=None):
+        """
+
+        :param file_dir: a directory that include all flows
+        :param process_num:
+        :param removed_pcap_file: pass removed_pcap file from previous step to delete it at the end of extracting
+        process
+        :return: extract ip, time, traffic_type by running dpi and save record in mongodb
+        """
         logger.info("start extracting features of flows")
         start = time.time()
         while time.time() - start < 30:

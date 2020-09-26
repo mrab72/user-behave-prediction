@@ -21,7 +21,7 @@ PNG_SIZE = 28
 logger = logging.getLogger(__name__)
 
 
-class ExtractFlowsInformation(object):
+class ExtractFlowsInformation:
 
     def __init__(self, input_dir, pattern):
         self.input_dir = input_dir
@@ -48,6 +48,10 @@ class ExtractFlowsInformation(object):
         return fh
 
     def extract_features(self):
+        """
+            hear the features of all flows in directory extracted and data saved in mongodb
+        :return:
+        """
         while glob.glob(self.input_dir + '/*.*', recursive=True):
             for item in glob.glob(self.input_dir + '/*.*', recursive=True):
                 try:
@@ -89,6 +93,11 @@ class ExtractFlowsInformation(object):
 
     @staticmethod
     def _extract_time_and_ip(file_dir):
+        """
+
+        :param file_dir:
+        :return:
+        """
         details = subprocess.check_output(
             'tshark -r %s -t ad' % file_dir, shell=True).decode("utf-8").split(' ')
         return {"date": details[5], "hour": details[6], "source_ip": details[7], "destination_ip": details[8]}
@@ -117,7 +126,6 @@ class ExtractFlowsInformation(object):
                     src = socket.inet_ntop(socket.AF_INET, packet.src)
                     dst = socket.inet_ntop(socket.AF_INET, packet.dst)
                     logger.info(src)
-                    logger.info("I hate my projecttttttttttttttt")
                 total_bytes += packet.len
                 times.append(timestamp)
 
