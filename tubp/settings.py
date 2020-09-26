@@ -13,6 +13,22 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 from kombu import Queue
 import mongoengine
+import os
+
+
+def get_env_var(name, default=None, prefixed=True):
+    """ Returns the value of the environment variable with th given name
+
+    :param name: name of environment variable
+    :param prefixed whether to add project name prefix to env var or not
+    :param default: default value if the environment variable was not set
+    :return: value of the given environment variable
+    """
+    key = '%s'
+    if prefixed:
+        key = 'TUBP_%s'
+    return os.environ.get(key % name, default)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
