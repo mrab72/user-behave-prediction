@@ -101,13 +101,13 @@ MONGO_URI = {
 }
 
 MONGO_DEFAULT_CREDENTIALS = {
-    'username': "tubpUser",
-    'password': "tubp1398",
+    'username': get_env_var("MONGO_USER", "tubpUser", prefixed=True),
+    'password': get_env_var("MONGO_PASSWORD", prefixed=True),
 }
 
 MONGO_ADMIN_CREDENTIALS = {
-    'username': "admin",
-    'password': "admin1234"
+    'username': get_env_var("MONGO_ADMIN_USER", "admin", prefixed=False),
+    'password': get_env_var("MONGO_ADMIN_PASSWORD", "admin", prefixed=False)
 }
 
 MONGO_DATABASE.update(MONGO_DEFAULT_CREDENTIALS)
